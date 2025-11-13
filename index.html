@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Betting App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 375px;
+            background: #000;
+            padding: 24px;
+        }
+
+        .header {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 16px;
+        }
+
+        .match-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+        }
+
+        .team {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .team-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            overflow: hidden;
+        }
+
+        .team-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .team-name {
+            font-size: 18px;
+            font-weight: 600;
+            text-decoration: underline;
+            text-decoration-color: #fff;
+            text-decoration-thickness: 2px;
+            text-underline-offset: 4px;
+        }
+
+        .vs {
+            font-size: 24px;
+            color: #999;
+            margin: 0 16px;
+        }
+
+        .section {
+            margin-bottom: 36px;
+            position: relative;
+        }
+
+        .section-label {
+            font-size: 16px;
+            color: #999;
+            margin-bottom: 16px;
+        }
+
+        .bet-amount {
+            font-size: 48px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .bet-input-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bet-input {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 48px;
+            font-weight: 600;
+            width: 100%;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .bet-input:focus {
+            outline: 2px solid #0FF2AA;
+            outline-offset: 4px;
+            border-radius: 4px;
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .slider-container {
+            position: relative;
+            height: 56px;
+            background: #505050;
+            border-radius: 28px;
+            overflow: hidden;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 56px;
+            border-radius: 28px;
+            background: transparent;
+            outline: none;
+            position: relative;
+            z-index: 4;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: transparent;
+            cursor: pointer;
+            border: none;
+            position: relative;
+            z-index: 5;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: transparent;
+            cursor: pointer;
+            border: none;
+            position: relative;
+            z-index: 5;
+        }
+
+        .slider-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 56px;
+            background: #0FF2AA;
+            border-radius: 28px 0 0 28px;
+            pointer-events: none;
+            transition: width 0.1s ease;
+            z-index: 1;
+        }
+
+        .market-confidence {
+            position: absolute;
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+            font-size: 13px;
+            font-weight: 400;
+            color: #000;
+            z-index: 6;
+            pointer-events: none;
+            background: #fff;
+            padding: 4px 10px;
+            border-radius: 40px;
+            text-align: center;
+        }
+
+        .market-line {
+            position: absolute;
+            top: 40px;
+            left: 46px;
+            width: 0;
+            height: 16px;
+            border-left: 2px dashed rgba(255, 255, 255, 0.8);
+            z-index: 6;
+            pointer-events: none;
+        }
+
+        .market-line-top {
+            position: absolute;
+            top: 0;
+            left: 46px;
+            width: 0;
+            height: 16px;
+            border-left: 2px dashed rgba(255, 255, 255, 0.8);
+            z-index: 6;
+            pointer-events: none;
+        }
+
+        .confidence-value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 30px;
+            font-weight: 800;
+            color: #fff;
+            z-index: 2;
+            pointer-events: none;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .market-label {
+            font-size: 15px;
+            color: #fff;
+            position: relative;
+            margin-top: 12px;
+            text-align: left;
+        }
+
+        .to-win-input {
+            color: #0FF2AA;
+        }
+
+        .to-win-note {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .buy-button {
+            width: 100%;
+            background: #fff;
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            padding: 18px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .buy-button:active {
+            transform: scale(0.98);
+            background: #e5e5e5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">What you want to bet on</div>
+
+        <div class="match-card">
+            <div class="team">
+                <div class="team-logo">
+                    <img src="https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg" alt="MUN">
+                </div>
+                <div class="team-name">MUN</div>
+            </div>
+
+            <div class="vs">-</div>
+
+            <div class="team">
+                <div class="team-logo">
+                    <img src="https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg" alt="LIV">
+                </div>
+                <div class="team-name">LIV</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-label">Bet Amount</div>
+            <div class="bet-input-container">
+                <span style="font-size: 48px; font-weight: 600;">$</span>
+                <input type="number" class="bet-input" id="betAmount" value="100" min="1" step="1">
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-label">Your confidence level: <span id="confidenceLabelValue">72%</span></div>
+            <div class="slider-container">
+                <div class="slider-fill" id="sliderFill"></div>
+                <div class="market-confidence" id="marketConfidence">43%</div>
+                <div class="market-line-top"></div>
+                <div class="market-line"></div>
+                <div class="confidence-value" id="confidenceValue">72%</div>
+                <input type="range" class="slider" id="confidenceSlider" min="1" max="99" value="72">
+            </div>
+            <div class="market-label">Current market confidence</div>
+        </div>
+
+        <div class="section">
+            <div class="section-label">To win</div>
+            <div class="bet-input-container">
+                <span style="font-size: 48px; font-weight: 600; color: #0FF2AA;">$</span>
+                <input type="number" class="bet-input to-win-input" id="toWinAmount" value="139" min="1" step="1">
+            </div>
+            <div class="to-win-note">based on current confidence level</div>
+        </div>
+
+        <button class="buy-button">Buy Yes</button>
+    </div>
+
+    <script>
+        const betInput = document.getElementById('betAmount');
+        const confidenceSlider = document.getElementById('confidenceSlider');
+        const sliderFill = document.getElementById('sliderFill');
+        const confidenceValue = document.getElementById('confidenceValue');
+        const confidenceLabelValue = document.getElementById('confidenceLabelValue');
+        const toWinAmount = document.getElementById('toWinAmount');
+
+        function updateSliderFill() {
+            const value = parseFloat(confidenceSlider.value);
+            const min = parseFloat(confidenceSlider.min);
+            const max = parseFloat(confidenceSlider.max);
+
+            // Calculate the percentage (0 to 100)
+            const percentage = ((value - min) / (max - min)) * 100;
+
+            sliderFill.style.width = percentage + '%';
+        }
+
+        function calculateWinnings() {
+            const betAmount = parseFloat(betInput.value) || 0;
+            const confidence = parseFloat(confidenceSlider.value) / 100;
+
+            if (confidence > 0) {
+                const winAmount = betAmount / confidence;
+                toWinAmount.value = Math.round(winAmount);
+            }
+        }
+
+        function calculateBetAmount() {
+            const winAmount = parseFloat(toWinAmount.value) || 0;
+            const confidence = parseFloat(confidenceSlider.value) / 100;
+
+            if (confidence > 0) {
+                const betAmount = winAmount * confidence;
+                betInput.value = Math.round(betAmount);
+            }
+        }
+
+        function updateConfidenceDisplay() {
+            const percentage = confidenceSlider.value + '%';
+            confidenceValue.textContent = percentage;
+            confidenceLabelValue.textContent = percentage;
+        }
+
+        // Initialize
+        updateSliderFill();
+        updateConfidenceDisplay();
+        calculateWinnings();
+
+        // Event listeners
+        confidenceSlider.addEventListener('input', () => {
+            updateSliderFill();
+            updateConfidenceDisplay();
+            calculateWinnings();
+        });
+
+        betInput.addEventListener('input', () => {
+            calculateWinnings();
+        });
+
+        toWinAmount.addEventListener('input', () => {
+            calculateBetAmount();
+        });
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            updateSliderFill();
+            updateConfidenceDisplay();
+            calculateWinnings();
+        });
+    </script>
+</body>
+</html>
